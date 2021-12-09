@@ -1,24 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Essentials;
 using Microsoft.Toolkit.Parsers.Rss;
+using Ui.Models;
 
 namespace Ui
 {
 	public partial class MainPage : ContentPage
 	{
-		public MainPage()
+        public ObservableCollection<RssSource> RssSources { get; set; }
+
+        public ObservableCollection<RssSchema> RssSchemas { get; set; } = new ObservableCollection<RssSchema>();
+
+        public MainPage()
 		{
 			InitializeComponent();
 
-            var task = Parse("https://www.jw.org/it/news/jw-news/rss/NewsSubsectionRSSFeed/feed.xml");
+            RssSources = new ObservableCollection<RssSource>
+            {
+                new RssSource
+                {
+                    Title = "JW.ORG",
+                    Url = "https://www.jw.org/it/news/jw-news/rss/NewsSubsectionRSSFeed/feed.xml"
+                }
+            };
+
+            lstItems.ItemsSource = RssSchemas;
+            pkrRssSource.ItemsSource = RssSources;
+
+            foreach (var source in RssSources) 
+            {
+                Parse(source.Url);
+            }
         }
 
-        public async Task<IEnumerable<RssSchema>> Parse(string url)
+        public async Task Parse(string url)
         {
             string feed = null;
 
@@ -27,19 +48,22 @@ namespace Ui
                 feed = await client.GetStringAsync(url);
             }
 
-            if (feed == null) return new List<RssSchema>();
+            if (feed == null) return;
 
             try
             {
                 var parser = new RssParser();
                 var rss = parser.Parse(feed);
-                lstItems.ItemsSource = rss.ToList().OrderByDescending(t => t.PublishDate);
-                return rss;
+                foreach (var i in rss) 
+                {
+                    RssSchemas.Add(i);
+                }
+
+                RssSchemas = new ObservableCollection<RssSchema>(RssSchemas.ToList().OrderByDescending(t => t.PublishDate));
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return null;
             }
         }
 

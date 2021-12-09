@@ -1,10 +1,16 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Ui.MainPage"
-             BackgroundColor="{DynamicResource SecondaryColor}">
+             x:Class="Ui.MainPage">
 
     <ScrollView>
         <StackLayout>
+            <StackLayout>
+                <Picker x:Name="pkrRssSource" 
+                        Title="all sources" 
+                        ItemDisplayBinding="{Binding Title}" />
+                <Button x:Name="btnAddSource" Text="Add Source" />
+            </StackLayout>
+            
             <CollectionView x:Name="lstItems"
                         SelectionMode="Single"
                         SelectionChanged="lstItems_SelectionChanged">
@@ -12,7 +18,7 @@
                     <DataTemplate>
                         <Grid Padding="10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="110"/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -20,21 +26,23 @@
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
-                            <Image Grid.Column="0" 
-                                Grid.RowSpan="2"
-                                WidthRequest="100" HeightRequest="100"
-                                Source="{Binding ImageUrl}"/>
+                            <Image  Source="{Binding ImageUrl}"
+                                Grid.Column="0" 
+                                Grid.RowSpan="3"
+                                WidthRequest="100" HeightRequest="100" />
                             <Label Text="{Binding PublishDate}" 
-                                Grid.Row="0" Grid.Column="1"
+                                Grid.Row="0" 
+                                Grid.Column="1"
                                 VerticalTextAlignment="Start" />
                             <Label Text="{Binding Title}" 
-                                Grid.Row="1" Grid.Column="1"
+                                Grid.Row="1" 
+                                Grid.Column="1"
                                 FontAttributes="Bold"
                                 VerticalTextAlignment="Start" />
                             <Label Text="{Binding Summary}" 
-                                Grid.Row="2" Grid.Column="1"
+                                Grid.Row="2" 
+                                Grid.Column="1"
                                 VerticalTextAlignment="Start" />
-                            
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
