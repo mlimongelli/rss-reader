@@ -72,5 +72,10 @@ namespace Ui
             var item = (RssSchema)e.CurrentSelection.FirstOrDefault();
             Browser.OpenAsync(item.FeedUrl);
         }
-	}
+
+        private void btnAddSource_Clicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new AddSourcePage());
+        }
+    }
 }

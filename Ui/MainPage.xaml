@@ -8,7 +8,9 @@
                 <Picker x:Name="pkrRssSource" 
                         Title="all sources" 
                         ItemDisplayBinding="{Binding Title}" />
-                <Button x:Name="btnAddSource" Text="Add Source" />
+                <Button x:Name="btnAddSource" 
+                        Text="Add Source" 
+                        Clicked="btnAddSource_Clicked" />
             </StackLayout>
             
             <CollectionView x:Name="lstItems"

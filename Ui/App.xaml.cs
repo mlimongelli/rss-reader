@@ -11,7 +11,8 @@ namespace Ui
 		{
 			InitializeComponent();
 
-			MainPage = new MainPage();
+			MainPage = new NavigationPage();
+			MainPage.Navigation.PushAsync(new MainPage());
 		}
 	}
 }
