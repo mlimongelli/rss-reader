@@ -7,7 +7,8 @@
             <StackLayout>
                 <Picker x:Name="pkrRssSource" 
                         Title="all sources" 
-                        ItemDisplayBinding="{Binding Title}" />
+                        ItemDisplayBinding="{Binding Title}"
+                        SelectedIndexChanged="pkrRssSource_SelectedIndexChanged"/>
                 <Button x:Name="btnAddSource" 
                         Text="Add Source" 
                         Clicked="btnAddSource_Clicked" />

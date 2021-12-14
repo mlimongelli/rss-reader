@@ -11,41 +11,31 @@ using Ui.Models;
 
 namespace Ui
 {
-	public partial class MainPage : ContentPage
+    public partial class MainPage : ContentPage
 	{
-        public ObservableCollection<RssSource> RssSources { get; set; }
-
-        public ObservableCollection<RssSchema> RssSchemas { get; set; } = new ObservableCollection<RssSchema>();
+        public IList<RssEntry> AllEntries = new List<RssEntry>();
+        public ObservableCollection<RssEntry> RssEntries { get; set; } = new ObservableCollection<RssEntry>();
 
         public MainPage()
 		{
 			InitializeComponent();
 
-            RssSources = new ObservableCollection<RssSource>
-            {
-                new RssSource
-                {
-                    Title = "JW.ORG",
-                    Url = "https://www.jw.org/it/news/jw-news/rss/NewsSubsectionRSSFeed/feed.xml"
-                }
-            };
+            pkrRssSource.ItemsSource = App.RssSources;
 
-            lstItems.ItemsSource = RssSchemas;
-            pkrRssSource.ItemsSource = RssSources;
-
-            foreach (var source in RssSources) 
+            foreach (var source in App.RssSources) 
             {
-                Parse(source.Url);
+                Parse(source);
             }
+            lstItems.ItemsSource = RssEntries;
         }
 
-        public async Task Parse(string url)
+        public void Parse(RssSource source)
         {
             string feed = null;
 
             using (var client = new HttpClient())
             {
-                feed = await client.GetStringAsync(url);
+                feed = client.GetStringAsync(source.Url).Result;
             }
 
             if (feed == null) return;
@@ -54,12 +44,19 @@ namespace Ui
             {
                 var parser = new RssParser();
                 var rss = parser.Parse(feed);
-                foreach (var i in rss) 
+                foreach (var i in rss)
                 {
-                    RssSchemas.Add(i);
+                    AllEntries.Add(new RssEntry
+                    {
+                        SourceId = source.Id,
+                        PublishDate = i.PublishDate,
+                        Summary = i.Summary,
+                        Title = i.Title,
+                        ImageUrl = i.ImageUrl,
+                    });
                 }
 
-                RssSchemas = new ObservableCollection<RssSchema>(RssSchemas.ToList().OrderByDescending(t => t.PublishDate));
+                RssEntries = new ObservableCollection<RssEntry>(AllEntries.OrderByDescending(t => t.PublishDate));
             }
             catch (Exception ex)
             {
@@ -76,6 +73,16 @@ namespace Ui
         private void btnAddSource_Clicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new AddSourcePage());
+        }
+
+        private void pkrRssSource_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var selectedSource = pkrRssSource.SelectedItem as RssSource;
+
+            RssEntries.Clear();
+            RssEntries = new ObservableCollection<RssEntry>(
+                AllEntries.Where(t => t.SourceId == selectedSource.Id).OrderByDescending(t => t.PublishDate));
+            lstItems.ItemsSource = RssEntries;
         }
     }
 }
